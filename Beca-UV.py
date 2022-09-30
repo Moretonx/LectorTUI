@@ -9,13 +9,13 @@ def lectura():
     global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto
 
     #Peticion GET, se obtienen los datos del alumno
-    url = 'http://localhost:4000/alumnos/1'
+    rut = str(cajaTexto.get())
+    url = 'http://localhost:4000/alumnos/'+rut
     response = requests.get(url)
     data = response.json()
-    nombre = (data['nombre'])
+    nombre = data['nombre']
     Rut = data['rut']
     cantidad = data['cantidad']
-    rut = cajaTexto.get()
 
     if (rut == Rut):
         ventanaNueva = Toplevel(ventana)
