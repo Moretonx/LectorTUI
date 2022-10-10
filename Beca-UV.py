@@ -6,44 +6,53 @@ import requests
 
 #Funcion que se ejecuta al leer tarjeta
 def lectura():
-    global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto
+    global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto, url
 
     #Peticion GET, se obtienen los datos del alumno
-    url = 'http://localhost:4000/alumnos/1'
+    rut = str(cajaTexto.get())
+    url = 'http://localhost:4000/canjes/'+rut
     response = requests.get(url)
-    data = response.json()
-    nombre = (data['nombre'])
-    Rut = data['rut']
-    cantidad = data['cantidad']
-    rut = cajaTexto.get()
 
-    if (rut == Rut):
-        ventanaNueva = Toplevel(ventana)
-        ventanaNueva.geometry('1000x900')
-        ventanaNueva.configure(bg = 'white')
-        ventanaNueva.title('Lectura Exitosa')
-        tkinter.Label(ventanaNueva, image=imagen, bg='white').pack()
+    #Si existe el rut existe en la BD se obtienen los datos
+    if (response.status_code == 200):
+        data = response.json()
+        nombre = data['nombre']
+        cantidad = data['cantidad']
+
+        #Se verifica si el alumno posee almuerzos disponibles
+        if (cantidad > 0):
+            ventanaNueva = Toplevel(ventana)
+            ventanaNueva.geometry('1000x900')
+            ventanaNueva.configure(bg = 'white')
+            ventanaNueva.title('Lectura Exitosa')
+            tkinter.Label(ventanaNueva, image=imagen, bg='white').pack()
 
 
-        titulo0=tkinter.Label(ventanaNueva, text=nombre, bg="white")
-        titulo0.pack()
-        titulo0.configure(font=letra1)
-        
-        titulo1=tkinter.Label(ventanaNueva, text="Almuerzos disponibles este mes: "+str(cantidad), bg="white")
-        titulo1.pack()
-        titulo1.configure(font=letra2)
+            titulo0=tkinter.Label(ventanaNueva, text=nombre, bg="white")
+            titulo0.pack()
+            titulo0.configure(font=letra1)
+            
+            titulo1=tkinter.Label(ventanaNueva, text="Almuerzos disponibles este mes: "+str(cantidad), bg="white")
+            titulo1.pack()
+            titulo1.configure(font=letra2)
 
-        desea=PhotoImage(file="img/desea.png")
-        tkinter.Label(ventanaNueva, image=desea, bg='white').pack()
+            desea=PhotoImage(file="img/desea.png")
+            tkinter.Label(ventanaNueva, image=desea, bg='white').pack()
 
-        titulo2=tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white")
-        titulo2.pack()
-        titulo2.configure(font=letra2)
-        
-        boton=tkinter.Button(ventanaNueva, text="Canjear beca", command=canjear, bg="green", fg="white")
-        boton.pack()
-        boton1=tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white")
-        boton1.pack()
+            titulo2=tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white")
+            titulo2.pack()
+            titulo2.configure(font=letra2)
+            
+            boton=tkinter.Button(ventanaNueva, text="Canjear beca", command=canjear, bg="green", fg="white")
+            boton.pack()
+            boton1=tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white")
+            boton1.pack()
+    
+        #Cuando no posee almuerzos disponibles
+        else:
+            messagebox.showerror("ACCIÓN INVÁLIDA","¡Usted no posee más almuerzos este mes!")
+
+    #Si el rut no existe en la BD
     else:
         global rechazar
 
@@ -76,9 +85,6 @@ def canjear():
     ventanaN.configure(bg = 'white')
     ventanaN.title('Canje Exitoso')
     tkinter.Label(ventanaN, image=imagen, bg='white').pack()
-    ventanaNueva.destroy()
-
-#peticion PUT
 
     #messagebox.showinfo("ACCIÓN INVÁLIDA","¡Ya has canjeado tu beca hoy!")
     titulo3=tkinter.Label(ventanaN, text="¡Beca aceptada!", bg='white')
@@ -95,6 +101,13 @@ def canjear():
 
     boton4=tkinter.Button(ventanaN, text="Salir", command=ventanaN.destroy, bg="red", fg="white")
     boton4.pack()
+
+    #peticion PATCH que descuenta un almuerzo, efectuando así el canje de la beca
+    requests.patch(url)
+    ventanaNueva.destroy()
+
+
+#------------------- Inicio del programa ------------------------#
 
 global lector
 #Se ejecuta la ventana principal 
