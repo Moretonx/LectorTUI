@@ -13,13 +13,14 @@ def lectura():
     url = 'http://localhost:4000/canjes/'+rut
     response = requests.get(url)
 
+    #Si existe el rut existe en la BD se obtienen los datos
     if (response.status_code == 200):
         data = response.json()
         nombre = data['nombre']
-        Rut = data['rut']
         cantidad = data['cantidad']
-        
-        if(rut == Rut and cantidad > 0):
+
+        #Se verifica si el alumno posee almuerzos disponibles
+        if (cantidad > 0):
             ventanaNueva = Toplevel(ventana)
             ventanaNueva.geometry('1000x900')
             ventanaNueva.configure(bg = 'white')
@@ -46,9 +47,12 @@ def lectura():
             boton.pack()
             boton1=tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white")
             boton1.pack()
+    
+        #Cuando no posee almuerzos disponibles
         else:
             messagebox.showerror("ACCIÓN INVÁLIDA","¡Usted no posee más almuerzos este mes!")
 
+    #Si el rut no existe en la BD
     else:
         global rechazar
 
@@ -82,8 +86,6 @@ def canjear():
     ventanaN.title('Canje Exitoso')
     tkinter.Label(ventanaN, image=imagen, bg='white').pack()
 
-#peticion PUT
-
     #messagebox.showinfo("ACCIÓN INVÁLIDA","¡Ya has canjeado tu beca hoy!")
     titulo3=tkinter.Label(ventanaN, text="¡Beca aceptada!", bg='white')
     titulo3.pack()
@@ -99,8 +101,13 @@ def canjear():
 
     boton4=tkinter.Button(ventanaN, text="Salir", command=ventanaN.destroy, bg="red", fg="white")
     boton4.pack()
+
+    #peticion PATCH que descuenta un almuerzo, efectuando así el canje de la beca
     requests.patch(url)
     ventanaNueva.destroy()
+
+
+#------------------- Inicio del programa ------------------------#
 
 global lector
 #Se ejecuta la ventana principal 
