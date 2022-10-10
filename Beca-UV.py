@@ -18,6 +18,7 @@ def lectura():
         nombre = data['nombre']
         Rut = data['rut']
         cantidad = data['cantidad']
+        
         if(rut == Rut and cantidad > 0):
             ventanaNueva = Toplevel(ventana)
             ventanaNueva.geometry('1000x900')
