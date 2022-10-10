@@ -6,44 +6,48 @@ import requests
 
 #Funcion que se ejecuta al leer tarjeta
 def lectura():
-    global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto
+    global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto, url
 
     #Peticion GET, se obtienen los datos del alumno
     rut = str(cajaTexto.get())
-    url = 'http://localhost:4000/alumnos/'+rut
+    url = 'http://localhost:4000/canjes/'+rut
     response = requests.get(url)
-    data = response.json()
-    nombre = data['nombre']
-    Rut = data['rut']
-    cantidad = data['cantidad']
 
-    if (rut == Rut):
-        ventanaNueva = Toplevel(ventana)
-        ventanaNueva.geometry('1000x900')
-        ventanaNueva.configure(bg = 'white')
-        ventanaNueva.title('Lectura Exitosa')
-        tkinter.Label(ventanaNueva, image=imagen, bg='white').pack()
+    if (response.status_code == 200):
+        data = response.json()
+        nombre = data['nombre']
+        Rut = data['rut']
+        cantidad = data['cantidad']
+        if(rut == Rut and cantidad > 0):
+            ventanaNueva = Toplevel(ventana)
+            ventanaNueva.geometry('1000x900')
+            ventanaNueva.configure(bg = 'white')
+            ventanaNueva.title('Lectura Exitosa')
+            tkinter.Label(ventanaNueva, image=imagen, bg='white').pack()
 
 
-        titulo0=tkinter.Label(ventanaNueva, text=nombre, bg="white")
-        titulo0.pack()
-        titulo0.configure(font=letra1)
-        
-        titulo1=tkinter.Label(ventanaNueva, text="Almuerzos disponibles este mes: "+str(cantidad), bg="white")
-        titulo1.pack()
-        titulo1.configure(font=letra2)
+            titulo0=tkinter.Label(ventanaNueva, text=nombre, bg="white")
+            titulo0.pack()
+            titulo0.configure(font=letra1)
+            
+            titulo1=tkinter.Label(ventanaNueva, text="Almuerzos disponibles este mes: "+str(cantidad), bg="white")
+            titulo1.pack()
+            titulo1.configure(font=letra2)
 
-        desea=PhotoImage(file="img/desea.png")
-        tkinter.Label(ventanaNueva, image=desea, bg='white').pack()
+            desea=PhotoImage(file="img/desea.png")
+            tkinter.Label(ventanaNueva, image=desea, bg='white').pack()
 
-        titulo2=tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white")
-        titulo2.pack()
-        titulo2.configure(font=letra2)
-        
-        boton=tkinter.Button(ventanaNueva, text="Canjear beca", command=canjear, bg="green", fg="white")
-        boton.pack()
-        boton1=tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white")
-        boton1.pack()
+            titulo2=tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white")
+            titulo2.pack()
+            titulo2.configure(font=letra2)
+            
+            boton=tkinter.Button(ventanaNueva, text="Canjear beca", command=canjear, bg="green", fg="white")
+            boton.pack()
+            boton1=tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white")
+            boton1.pack()
+        else:
+            messagebox.showerror("ACCIÓN INVÁLIDA","¡Usted no posee más almuerzos este mes!")
+
     else:
         global rechazar
 
@@ -76,7 +80,6 @@ def canjear():
     ventanaN.configure(bg = 'white')
     ventanaN.title('Canje Exitoso')
     tkinter.Label(ventanaN, image=imagen, bg='white').pack()
-    ventanaNueva.destroy()
 
 #peticion PUT
 
@@ -95,6 +98,8 @@ def canjear():
 
     boton4=tkinter.Button(ventanaN, text="Salir", command=ventanaN.destroy, bg="red", fg="white")
     boton4.pack()
+    requests.patch(url)
+    ventanaNueva.destroy()
 
 global lector
 #Se ejecuta la ventana principal 
