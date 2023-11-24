@@ -13,7 +13,7 @@ def lectura():
     url = 'http://localhost:4000/canjes/'+rut
     response = requests.get(url)
 
-    #Si existe el rut existe en la BD se obtienen los datos
+    #Si existe el rut existe en la BD se obtienen los datos, siempre que no haya hecho un canje hoy
     if (response.status_code == 200):
         data = response.json()
         nombre = data['nombre']
@@ -50,12 +50,31 @@ def lectura():
     
         #Cuando no posee almuerzos disponibles
         else:
-            messagebox.showerror("ACCIÓN INVÁLIDA","¡Usted no posee más almuerzos este mes!")
+            global rechazar
 
-    #Si el rut no existe en la BD
-    else:
-        global rechazar
+            ventanaR = Toplevel(ventana)
+            ventanaR.geometry('1000x900')
+            ventanaR.configure(bg = 'white')
+            ventanaR.title('Canje fallido')
+            tkinter.Label(ventanaR, image=imagen, bg='white').pack()
 
+            titulo3=tkinter.Label(ventanaR, text="¡Beca rechazada!", bg='white')
+            titulo3.pack()
+            titulo3.configure(font=letra)
+
+            rechazar=PhotoImage(file="img/rechazar.png")
+            tkinter.Label(ventanaR, image=rechazar, bg='white').pack()
+
+            titulo5=tkinter.Label(ventanaR, text="¡ACCIÓN INVÁLIDA!" +" "+ "Usted no posee más almuerzos este mes", bg="white")
+            titulo5.pack()
+            titulo5.configure(font=letra2)
+
+            boton4=tkinter.Button(ventanaR, text="Salir", command=ventanaR.destroy, bg="red", fg="white")
+            boton4.pack()
+
+    #Si ya ha hecho un canje hoy
+    elif (response.status_code == 201):
+        
         ventanaR = Toplevel(ventana)
         ventanaR.geometry('1000x900')
         ventanaR.configure(bg = 'white')
@@ -67,6 +86,28 @@ def lectura():
         titulo3.configure(font=letra)
 
         rechazar=PhotoImage(file="img/rechazar.png")
+        tkinter.Label(ventanaR, image=rechazar, bg='white').pack()
+
+        titulo5=tkinter.Label(ventanaR, text="¡ACCIÓN INVÁLIDA!"+" "+ "Usted ya canjeó su beca hoy", bg="white")
+        titulo5.pack()
+        titulo5.configure(font=letra2)
+
+        boton4=tkinter.Button(ventanaR, text="Salir", command=ventanaR.destroy, bg="red", fg="white")
+        boton4.pack()
+
+    #Si el rut no existe en la BD
+    else:
+
+        ventanaR = Toplevel(ventana)
+        ventanaR.geometry('1000x900')
+        ventanaR.configure(bg = 'white')
+        ventanaR.title('Canje fallido')
+        tkinter.Label(ventanaR, image=imagen, bg='white').pack()
+
+        titulo3=tkinter.Label(ventanaR, text="¡Beca rechazada!", bg='white')
+        titulo3.pack()
+        titulo3.configure(font=letra)
+
         tkinter.Label(ventanaR, image=rechazar, bg='white').pack()
 
         titulo5=tkinter.Label(ventanaR, text="Usted no posee beca", bg="white")
@@ -86,7 +127,6 @@ def canjear():
     ventanaN.title('Canje Exitoso')
     tkinter.Label(ventanaN, image=imagen, bg='white').pack()
 
-    #messagebox.showinfo("ACCIÓN INVÁLIDA","¡Ya has canjeado tu beca hoy!")
     titulo3=tkinter.Label(ventanaN, text="¡Beca aceptada!", bg='white')
     titulo3.pack()
     titulo3.configure(font=letra)
