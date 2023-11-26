@@ -1,16 +1,42 @@
 import tkinter
 import tkinter.font as TkFont
-from tkinter import PhotoImage, Toplevel, messagebox
+from tkinter import PhotoImage, Toplevel, ttk
 import requests
+import json
 
+def lector():
+    global ventana, ventanaLector, lectorImage,cajaTexto
+
+    ventanaLector = Toplevel(ventana)
+    ventanaLector.geometry('1000x900')
+    ventanaLector.configure(bg = 'white')
+    ventanaLector.title('Beca de Almuerzo UV')
+    tkinter.Label(ventanaLector, image=imagen, bg='white').pack()
+
+    titulo=tkinter.Label(ventanaLector, text="¡Bienvenido!", bg="white")
+    titulo.pack()
+    titulo0=tkinter.Label(ventanaLector, text="Acerque su tarjeta al lector", bg="white")
+    titulo0.pack()
+    titulo.configure(font=letra)
+    titulo0.configure(font=letra)
+
+    lectorImage=PhotoImage(file="img/lector.png")
+    tkinter.Label(ventanaLector, image=lectorImage, bg='white').pack()
+
+    cajaTexto = tkinter.Entry(ventanaLector)
+    cajaTexto.pack()
+    boto=tkinter.Button(ventanaLector, text="Canjear beca", command=lectura, bg="blue", fg="white")
+    boto.pack()
 
 #Funcion que se ejecuta al leer tarjeta
 def lectura():
-    global ventana, ventanaNueva, imagen, cantidad, desea, cajaTexto, url
+    global ventana, ventanaNueva, imagen, cantidad, url
 
     #Peticion GET, se obtienen los datos del alumno
     rut = str(cajaTexto.get())
-    url = 'http://localhost:4000/canjes/'+rut
+    casino = str(combobox.get())
+    idCasino = casino.split(' - ')[0]
+    url = 'http://localhost:4000/canjes/'+rut+'/'+idCasino
     response = requests.get(url)
 
     #Si existe el rut existe en la BD se obtienen los datos, siempre que no haya hecho un canje hoy
@@ -36,8 +62,7 @@ def lectura():
             titulo1.pack()
             titulo1.configure(font=letra2)
 
-            desea=PhotoImage(file="img/desea.png")
-            tkinter.Label(ventanaNueva, image=desea, bg='white').pack()
+            tkinter.Label(ventanaNueva, image=imagen1, bg='white').pack()
 
             titulo2=tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white")
             titulo2.pack()
@@ -107,7 +132,8 @@ def lectura():
         titulo3=tkinter.Label(ventanaR, text="¡Beca rechazada!", bg='white')
         titulo3.pack()
         titulo3.configure(font=letra)
-
+        
+        rechazar=PhotoImage(file="img/rechazar.png")
         tkinter.Label(ventanaR, image=rechazar, bg='white').pack()
 
         titulo5=tkinter.Label(ventanaR, text="Usted no posee beca", bg="white")
@@ -149,7 +175,6 @@ def canjear():
 
 #------------------- Inicio del programa ------------------------#
 
-global lector
 #Se ejecuta la ventana principal 
 ventana = tkinter.Tk()
 ventana.geometry('1000x900')
@@ -158,23 +183,43 @@ ventana.title('Beca de Almuerzo UV')
 
 imagen=PhotoImage(file="img/uv.png")
 tkinter.Label(ventana, image=imagen, bg='white').pack()
-titulo=tkinter.Label(ventana, text="¡Bienvenido!", bg="white")
-titulo.pack()
-titulo0=tkinter.Label(ventana, text="Acerque su tarjeta al lector", bg="white")
+titulo0=tkinter.Label(ventana, text="Por favor selecione el Casino donde se encuentra", bg="white")
 titulo0.pack()
 
 letra=TkFont.Font(family="Arial", size=20, weight="bold")
 letra1=TkFont.Font(family="Arial", size=16, weight="bold")
 letra2=TkFont.Font(family="Arial", size=16, weight="normal")
-titulo.configure(font=letra)
 titulo0.configure(font=letra)
 
-imagen1=PhotoImage(file="img/lector.png")
+imagen1=PhotoImage(file="img/desea.png")
 tkinter.Label(ventana, image=imagen1, bg='white').pack()
 
-cajaTexto = tkinter.Entry(ventana)
-cajaTexto.pack()
-boto=tkinter.Button(ventana, text="Canjear beca", command=lectura, bg="blue", fg="white")
-boto.pack()
+def habilitar_boton(event):
+    seleccion = combobox.get()
+    if seleccion and seleccion != "Seleccione una opción":
+        boton_obtener_seleccion['state'] = 'normal'
+    else:
+        boton_obtener_seleccion['state'] = 'disabled'
+
+# Se obtienen los casinos disponibles
+url = 'http://localhost:4000/casinos'
+response = requests.get(url)
+datos = response.json()
+json_string = json.dumps(datos)
+casinos = json.loads(json_string)
+nombres = [(objeto['id'], objeto['nombre']) for objeto in casinos]
+
+# Crear una lista de opciones disponibles
+opciones = [f"{id} - {nombre}" for id, nombre in nombres]
+
+# Crear la entrada de texto con menú desplegable
+combobox = ttk.Combobox(ventana, values=opciones, width=48)
+combobox.set("Seleccione una opción")
+combobox.pack(pady=10)
+
+combobox.bind("<<ComboboxSelected>>", habilitar_boton)
+
+boton_obtener_seleccion = tkinter.Button(ventana, text="Selecionar Casino", state='disabled', command=lector, bg="blue", fg="white")
+boton_obtener_seleccion.pack(pady=5)
 
 ventana.mainloop()
