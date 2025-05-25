@@ -36,7 +36,7 @@ def lectura():
     rut = str(cajaTexto.get())
     casino = str(combobox.get())
     idCasino = casino.split(' - ')[0]
-    url = 'http://192.168.94.187:4000/api/canjes/'+rut+'/'+idCasino
+    url = 'http://192.168.19.187:4000/api/canjes/'+rut+'/'+idCasino
     response = requests.get(url)
 
     #Si existe el rut existe en la BD se obtienen los datos, siempre que no haya hecho un canje hoy
@@ -202,7 +202,7 @@ def habilitar_boton(event):
         boton_obtener_seleccion['state'] = 'disabled'
 
 # Se obtienen los casinos disponibles
-url = 'http://192.168.94.187:4000/api/casinos'
+url = 'http://192.168.19.187:4000/api/casinos'
 response = requests.get(url)
 casinos = response.json()
 nombres = [(objeto['id'], objeto['nombre']) for objeto in casinos]
