@@ -1,5 +1,11 @@
 # BecaUV-Raspberry
 
+Autor: Francisco Moretti  
+Contacto: francisco.moretti@email.com  <!-- puedes reemplazar por el real -->
+Versión: 1.0  
+Fecha: 2025-06-03
+
+
 Este proyecto permite la interacción entre una Raspberry Pi 4 y un lector RFID-RC522 para registrar y consultar becas de alimentación mediante tarjetas NFC.
 
 ## 📦 Requisitos del sistema
@@ -50,3 +56,14 @@ Deberías ver:
 Si aparecen, ¡SPI está correctamente habilitado y listo para usarse!
 
 ---
+
+## ⚖️ Licencia
+
+Este proyecto hace uso del archivo `MFRC522.py`, derivado del repositorio original bajo licencia **GNU Lesser General Public License v3.0 (LGPL-3.0)**.
+
+Puedes consultar los términos completos de la licencia aquí:  
+🔗 https://www.gnu.org/licenses/lgpl-3.0.html
+
+Esto significa que puedes:
+- Usar, modificar y distribuir el código
+- Siempre que mantengas la licencia LGPL en las partes derivadas

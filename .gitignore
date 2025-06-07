@@ -1,0 +1,9 @@
+# Ignorar archivos compilados de Python
+*.pyc
+__pycache__/
+
+# archivos de salida
+*.pdf
+rfid_log.txt
+rfid_log_*.pdf
+*.log

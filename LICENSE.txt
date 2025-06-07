@@ -1,0 +1,9 @@
+This project includes a component (MFRC522.py) originally licensed under the
+GNU Lesser General Public License v3.0 (LGPL-3.0).
+
+To comply with the terms of the license, we preserve this notice.
+
+For full license details, please visit:
+https://www.gnu.org/licenses/lgpl-3.0.html
+
+See the README.md file for additional licensing and attribution information.
