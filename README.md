@@ -1,12 +1,47 @@
 # BecaUV-Raspberry
 
 Autor: Francisco Moretti  
-Contacto: francisco.moretti@email.com  <!-- puedes reemplazar por el real -->
+Contacto: francisco.moretti@email.com  
 Versión: 1.0  
 Fecha: 2025-06-03
 
-
 Este proyecto permite la interacción entre una Raspberry Pi 4 y un lector RFID-RC522 para registrar y consultar becas de alimentación mediante tarjetas NFC.
+
+---
+
+## 🔧 Instalación del proyecto
+
+Para evitar problemas con entornos protegidos en Raspberry Pi OS (como el error `externally-managed-environment`), se recomienda usar un entorno virtual.
+
+### Opción rápida (recomendada)
+
+1. Abre la terminal y ubícate en la carpeta raíz del proyecto.
+2. Ejecuta:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Este script crea un entorno virtual, instala las dependencias y lanza automáticamente la aplicación.
+
+### Opción manual (alternativa avanzada)
+
+Si prefieres hacerlo paso a paso:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python Beca-UV.py
+```
+
+Para salir del entorno virtual:
+```bash
+deactivate
+```
+
+---
 
 ## 📦 Requisitos del sistema
 
@@ -15,12 +50,6 @@ Este proyecto permite la interacción entre una Raspberry Pi 4 y un lector RFID-
 - Python 3.7 o superior
 - Dependencias instaladas desde `requirements.txt`
 - Archivo `MFRC522.py` disponible en el mismo directorio del script o correctamente importado
-
-## 🔧 Instalación de dependencias
-
-Ejecuta el siguiente comando en la terminal para instalar los requerimientos del proyecto:
-
-    pip3 install -r requirements.txt
 
 ---
 
