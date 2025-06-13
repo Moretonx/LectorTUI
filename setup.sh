@@ -4,16 +4,19 @@ echo "===================================="
 echo "   Instalación de entorno virtual"
 echo "===================================="
 
-# Verifica si Python 3 está instalado
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Python 3 no está instalado. Cancela la instalación."
-    exit 1
+# Verifica si python3.7 está disponible
+if command -v python3.7 &> /dev/null; then
+    PYTHON=python3.7
+    echo "✅ Usando Python 3.7"
+else
+    PYTHON=python3
+    echo "⚠️ Python 3.7 no encontrado. Usando Python por defecto: $PYTHON"
 fi
 
 # Crea entorno virtual si no existe
 if [ ! -d "venv" ]; then
     echo "🔧 Creando entorno virtual..."
-    python3 -m venv venv
+    $PYTHON -m venv venv
 fi
 
 # Activa entorno virtual
