@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Nombre del archivo principal
+MAIN_SCRIPT="Beca-UV.py"
+
 echo "===================================="
 echo "   Instalación de entorno virtual"
 echo "===================================="
@@ -42,7 +45,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 echo "🚀 Ejecutando aplicación Beca-UV.py..."
-python Beca-UV.py
+python "$(dirname "$0")/$MAIN_SCRIPT"
 
 echo "👋 Cerrando entorno virtual"
 deactivate
