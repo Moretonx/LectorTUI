@@ -16,8 +16,10 @@ if ! command -v $PYTHON_BIN &> /dev/null; then
     if [[ "$confirmar" == "s" ]]; then
         echo "🔧 Instalando Python 3.7 (esto puede tardar más de 30 minutos)..."
         sudo apt update
+        # 🔌 Instalamos dependencias necesarias para que Python se compile bien y funcione tkinter
         sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev \
-            libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+            libnss3-dev libssl-dev libreadline-dev libffi-dev wget \
+            tk-dev libtk8.6 libx11-dev
         cd /tmp
         wget https://www.python.org/ftp/python/3.7.17/Python-3.7.17.tgz
         tar -xf Python-3.7.17.tgz
