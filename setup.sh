@@ -9,6 +9,14 @@ echo "===================================="
 
 PYTHON_BIN="python3.7"
 
+# Detectar arquitectura (recomendado para Raspberry Pi)
+ARCH=$(uname -m)
+if [[ "$ARCH" != "aarch64" && "$ARCH" != "armv7l" ]]; then
+    echo "⚠️ Advertencia: Esta instalación está diseñada para Raspberry Pi de 64 bits (Arquitectura aarch64/armv7l)."
+    read -p "¿Deseas continuar de todos modos? (s/n): " continuar
+    [[ "$continuar" != "s" ]] && exit 1
+fi
+
 # Verifica si Python 3.7 está instalado
 if ! command -v $PYTHON_BIN &> /dev/null; then
     echo "⚠️ Python 3.7 no encontrado."
@@ -16,7 +24,9 @@ if ! command -v $PYTHON_BIN &> /dev/null; then
     if [[ "$confirmar" == "s" ]]; then
         echo "🔧 Instalando dependencias previas para Python 3.7..."
         sudo apt update
-        sudo apt install -y build-essential wget autoconf automake libtool             zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev             libreadline-dev libsqlite3-dev tk-dev liblzma-dev uuid-dev
+        sudo apt install -y build-essential wget autoconf automake libtool \
+            zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev \
+            libreadline-dev libsqlite3-dev tk-dev liblzma-dev uuid-dev
 
         echo "📦 Compilando e instalando libffi..."
         wget ftp://sourceware.org/pub/libffi/libffi-3.4.2.tar.gz
@@ -66,7 +76,7 @@ echo "📦 Instalando dependencias desde requirements.txt..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
-echo "🚀 Ejecutando aplicación Beca-UV.py..."
+echo "🚀 Ejecutando aplicación $MAIN_SCRIPT..."
 python "$(dirname "$0")/$MAIN_SCRIPT"
 
 echo "👋 Cerrando entorno virtual"
