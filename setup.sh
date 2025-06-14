@@ -1,35 +1,38 @@
 #!/bin/bash
 
 echo "===================================="
-echo "   Instalación de entorno virtual"
+echo "     Instalación de entorno virtual"
 echo "===================================="
 
-# Verificar si python3.7 está instalado
+# Buscar Python 3.7 si está disponible
 if command -v python3.7 &>/dev/null; then
-    PYTHON_BIN=python3.7
+    PYTHON=python3.7
     echo "✅ Python 3.7 encontrado."
 else
-    echo "⚠️ Python 3.7 no encontrado."
-    echo "⏬ Instalando Python 3.7 desde fuente..."
-
-    sudo apt update
-    sudo apt install -y wget build-essential zlib1g-dev libncurses5-dev libgdbm-dev \
-        libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev
-
-    wget https://www.python.org/ftp/python/3.7.17/Python-3.7.17.tgz
-    tar -xf Python-3.7.17.tgz
-    cd Python-3.7.17
-    ./configure --enable-optimizations
-    make -j$(nproc)
-    sudo make altinstall
-    cd ..
-    rm -rf Python-3.7.17 Python-3.7.17.tgz
-
-    PYTHON_BIN=python3.7
+    echo "⚠️  Python 3.7 no encontrado."
+    echo ""
+    echo "👉 Para instalar Python 3.7 fácilmente en tu Raspberry Pi, ejecuta:"
+    echo ""
+    echo "   sudo apt update && sudo apt install -y curl git"
+    echo "   curl https://pyenv.run | bash"
+    echo ""
+    echo "Luego agrega esto a tu ~/.bashrc:"
+    echo "   export PATH=\"\$HOME/.pyenv/bin:\$PATH\""
+    echo "   eval \"\$(pyenv init -)\""
+    echo "   eval \"\$(pyenv virtualenv-init -)\""
+    echo ""
+    echo "Aplica los cambios con:"
+    echo "   source ~/.bashrc"
+    echo ""
+    echo "E instala Python 3.7 con:"
+    echo "   pyenv install 3.7.17 && pyenv global 3.7.17"
+    echo ""
+    echo "Luego vuelve a ejecutar este script."
+    exit 1
 fi
 
 echo "🔧 Creando entorno virtual..."
-$PYTHON_BIN -m venv venv
+$PYTHON -m venv venv
 
 echo "📦 Activando entorno virtual..."
 source venv/bin/activate
@@ -39,7 +42,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 echo "🚀 Ejecutando aplicación Beca-UV.py..."
-$PYTHON_BIN App-RFID.py
+$PYTHON Beca-UV.py
 
 echo "👋 Cerrando entorno virtual"
 deactivate
