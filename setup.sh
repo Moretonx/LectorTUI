@@ -20,7 +20,8 @@ fi
 # Verifica si Python 3.7 está instalado
 if ! command -v $PYTHON_BIN &> /dev/null; then
     echo "⚠️ Python 3.7 no encontrado."
-    read -p "¿Quieres que intente instalar Python 3.7 automáticamente? (s/n): " confirmar
+    echo "La instalación puede durar más de 45 minutos"
+    read -p "¿Quieres que intente instalar Python 3.7? (s/n): " confirmar
     if [[ "$confirmar" == "s" ]]; then
         echo "🔧 Instalando dependencias previas para Python 3.7..."
         sudo apt update
