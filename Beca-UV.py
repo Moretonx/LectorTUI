@@ -155,6 +155,8 @@ def lector_loop(ventanaLector):
         while contexto["continue_reading"]:
             (status, _) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
             (status, uid) = MIFAREReader.MFRC522_Anticoll()
+            if isinstance(uid, (bytes, bytearray)):
+                uid = list(uid)
 
             if status == MIFAREReader.MI_OK:
                 MIFAREReader.MFRC522_SelectTag(uid)
