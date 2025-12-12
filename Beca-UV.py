@@ -93,7 +93,7 @@ def lector():
 def lectura():
     casino = str(combobox.get())
     idCasino = casino.split(' - ')[0]
-    contexto["url"] = f'http://192.168.19.187:4000/api/canjes/{contexto["rut"]}/{idCasino}'
+    contexto["url"] = f'https://becauv-production-393b.up.railway.app/api/canjes/{contexto["rut"]}/{idCasino}'
     response = requests.get(contexto["url"])
     contexto["rut"] = None
 
@@ -164,7 +164,7 @@ titulo0.configure(font=contexto["letra"])
 contexto["imagen1"] = PhotoImage(file="img/desea.png")
 tkinter.Label(contexto["ventana"], image=contexto["imagen1"], bg='white').pack()
 
-contexto["url"] = 'http://192.168.19.187:4000/api/casinos'
+contexto["url"] = 'https://becauv-production-393b.up.railway.app/api/casinos'
 response = requests.get(contexto["url"])
 casinos = response.json()
 nombres = [(objeto['id'], objeto['nombre']) for objeto in casinos]
