@@ -110,7 +110,7 @@ def lectura():
             tkinter.Label(ventanaNueva, image=contexto["imagen"], bg='white').pack()
 
             tkinter.Label(ventanaNueva, text=nombre, bg="white", font=contexto["letra1"]).pack()
-            tkinter.Label(ventanaNueva, text=f"Almuerzos disponibles este mes: {contexto["cantidad"]}", bg="white", font=contexto["letra2"]).pack()
+            tkinter.Label(ventanaNueva, text=f"Almuerzos disponibles este mes: {contexto['cantidad']}", bg="white", font=contexto["letra2"]).pack()
             tkinter.Label(ventanaNueva, image=contexto["imagen1"], bg='white').pack()
             tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white", font=contexto["letra2"]).pack()
 
