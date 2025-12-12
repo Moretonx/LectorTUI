@@ -4,6 +4,7 @@ from tkinter import PhotoImage, Toplevel, ttk
 import requests
 import time
 import signal
+import threading
 import RPi.GPIO as GPIO
 import MFRC522
 
@@ -22,9 +23,12 @@ contexto = {
 }
 
 # Capture SIGINT for cleanup when the script is aborted
-def end_read(signal, frame):
+def end_read(sig, frame):
     contexto["continue_reading"] = False
-    GPIO.cleanup()
+    try:
+        GPIO.cleanup()
+    except:
+        pass
 
 def mostrar_rechazo(titulo_texto, mensaje):
     ventanaR = Toplevel(contexto["ventana"])
@@ -48,51 +52,10 @@ def mostrar_rechazo(titulo_texto, mensaje):
     boton4 = tkinter.Button(ventanaR, text="Salir", command=ventanaR.destroy, bg="red", fg="white")
     boton4.pack()
 
-def lector():
-    ventanaLector = Toplevel(contexto["ventana"])
-    ventanaLector.geometry('1000x900')
-    ventanaLector.configure(bg='white')
-    ventanaLector.title('Beca de Almuerzo UV')
-    tkinter.Label(ventanaLector, image=contexto["imagen"], bg='white').pack()
-
-    tkinter.Label(ventanaLector, text="¡Bienvenido!", bg="white", font=contexto["letra"]).pack()
-    tkinter.Label(ventanaLector, text="Acerque su tarjeta al lector", bg="white", font=contexto["letra"]).pack()
-
-    lectorImage = PhotoImage(file="img/lector.png")
-    tkinter.Label(ventanaLector, image=lectorImage, bg='white').pack()
-    ventanaLector.lectorImage = lectorImage
-
-    key = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
-    GPIO.setwarnings(False)
-    signal.signal(signal.SIGINT, end_read)
-    MIFAREReader = MFRC522.MFRC522()
-
-    while contexto["continue_reading"]:
-        GPIO.setmode(GPIO.BOARD)
-        (status, _) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
-        (status, uid) = MIFAREReader.MFRC522_Anticoll()
-        if status == MIFAREReader.MI_OK:
-            MIFAREReader.MFRC522_SelectTag(uid)
-            numero = 68
-            status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, numero, key, uid)
-            if status == MIFAREReader.MI_OK:
-                contexto["rut"] = MIFAREReader.MFRC522_Read(numero)
-                MIFAREReader.MFRC522_StopCrypto1()
-                lectura()
-            else:
-                mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca")
-                break
-        else:
-            mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca")
-
-        time.sleep(.2)
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.cleanup()
-        time.sleep(.65)
-
 def lectura():
     casino = str(combobox.get())
     idCasino = casino.split(' - ')[0]
+
     contexto["url"] = f'https://becauv-production-393b.up.railway.app/api/canjes/{contexto["rut"]}/{idCasino}'
     response = requests.get(contexto["url"])
     contexto["rut"] = None
@@ -110,11 +73,18 @@ def lectura():
             tkinter.Label(ventanaNueva, image=contexto["imagen"], bg='white').pack()
 
             tkinter.Label(ventanaNueva, text=nombre, bg="white", font=contexto["letra1"]).pack()
-            tkinter.Label(ventanaNueva, text=f"Almuerzos disponibles este mes: {contexto['cantidad']}", bg="white", font=contexto["letra2"]).pack()
+            tkinter.Label(
+                ventanaNueva,
+                text=f"Almuerzos disponibles este mes: {contexto['cantidad']}",
+                bg="white",
+                font=contexto["letra2"]
+            ).pack()
             tkinter.Label(ventanaNueva, image=contexto["imagen1"], bg='white').pack()
             tkinter.Label(ventanaNueva, text="¿Desea canjear su beca?", bg="white", font=contexto["letra2"]).pack()
 
-            tkinter.Button(ventanaNueva, text="Canjear beca", command=lambda: canjear(ventanaNueva), bg="green", fg="white").pack()
+            tkinter.Button(ventanaNueva, text="Canjear beca",
+                           command=lambda: canjear(ventanaNueva),
+                           bg="green", fg="white").pack()
             tkinter.Button(ventanaNueva, text="No", command=ventanaNueva.destroy, bg="red", fg="white").pack()
         else:
             mostrar_rechazo("¡Beca rechazada!", "¡ACCIÓN INVÁLIDA! Usted no posee más almuerzos este mes")
@@ -124,6 +94,15 @@ def lectura():
 
     else:
         mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca")
+
+def lectura_desde_rut(rut_leido, ventanaLector):
+    # Esta función se ejecuta en el hilo de Tkinter (por after)
+    contexto["rut"] = rut_leido
+    try:
+        ventanaLector.destroy()
+    except:
+        pass
+    lectura()
 
 def canjear(ventanaNueva):
     ventanaN = Toplevel(contexto["ventana"])
@@ -142,10 +121,96 @@ def canjear(ventanaNueva):
 
     tkinter.Button(ventanaN, text="Salir", command=ventanaN.destroy, bg="red", fg="white").pack()
 
-    requests.patch(contexto["url"])
+    try:
+        requests.patch(contexto["url"])
+    except Exception as e:
+        mostrar_rechazo("Error de red", f"No se pudo registrar el canje: {e}")
+
     ventanaNueva.destroy()
 
-# Inicio del programa
+# =========================
+# LECTOR RFID EN HILO
+# =========================
+
+def lector_loop(ventanaLector):
+    key = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
+
+    GPIO.setwarnings(False)
+    signal.signal(signal.SIGINT, end_read)
+
+    MIFAREReader = MFRC522.MFRC522()
+
+    try:
+        GPIO.setmode(GPIO.BOARD)
+
+        while contexto["continue_reading"]:
+            (status, _) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
+            (status, uid) = MIFAREReader.MFRC522_Anticoll()
+
+            if status == MIFAREReader.MI_OK:
+                MIFAREReader.MFRC522_SelectTag(uid)
+                numero = 68
+                status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, numero, key, uid)
+
+                if status == MIFAREReader.MI_OK:
+                    rut_leido = MIFAREReader.MFRC522_Read(numero)
+                    MIFAREReader.MFRC522_StopCrypto1()
+
+                    # Evitar doble lectura
+                    contexto["continue_reading"] = False
+
+                    # Volver al hilo principal para abrir ventanas / llamar lectura()
+                    contexto["ventana"].after(0, lambda: lectura_desde_rut(rut_leido, ventanaLector))
+                    return
+                else:
+                    contexto["continue_reading"] = False
+                    contexto["ventana"].after(0, lambda: mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca"))
+                    return
+
+            time.sleep(0.2)
+
+    except Exception as e:
+        contexto["continue_reading"] = False
+        contexto["ventana"].after(0, lambda: mostrar_rechazo("Error lector", str(e)))
+    finally:
+        try:
+            GPIO.cleanup()
+        except:
+            pass
+
+def iniciar_lector():
+    # Reinicia bandera por si quedó en False por una lectura anterior
+    contexto["continue_reading"] = True
+
+    ventanaLector = Toplevel(contexto["ventana"])
+    ventanaLector.geometry('1000x900')
+    ventanaLector.configure(bg='white')
+    ventanaLector.title('Beca de Almuerzo UV')
+    tkinter.Label(ventanaLector, image=contexto["imagen"], bg='white').pack()
+
+    tkinter.Label(ventanaLector, text="¡Bienvenido!", bg="white", font=contexto["letra"]).pack()
+    tkinter.Label(ventanaLector, text="Acerque su tarjeta al lector", bg="white", font=contexto["letra"]).pack()
+
+    lectorImage = PhotoImage(file="img/lector.png")
+    tkinter.Label(ventanaLector, image=lectorImage, bg='white').pack()
+    ventanaLector.lectorImage = lectorImage
+
+    def cerrar():
+        contexto["continue_reading"] = False
+        try:
+            GPIO.cleanup()
+        except:
+            pass
+        ventanaLector.destroy()
+
+    ventanaLector.protocol("WM_DELETE_WINDOW", cerrar)
+
+    threading.Thread(target=lector_loop, args=(ventanaLector,), daemon=True).start()
+
+# =========================
+# INICIO DEL PROGRAMA (UI)
+# =========================
+
 contexto["ventana"] = tkinter.Tk()
 contexto["ventana"].geometry('1000x900')
 contexto["ventana"].configure(bg='white')
@@ -153,6 +218,7 @@ contexto["ventana"].title('Beca de Almuerzo UV')
 
 contexto["imagen"] = PhotoImage(file="img/uv.png")
 tkinter.Label(contexto["ventana"], image=contexto["imagen"], bg='white').pack()
+
 titulo0 = tkinter.Label(contexto["ventana"], text="Por favor seleccione el Casino donde se encuentra", bg="white")
 titulo0.pack()
 
@@ -164,6 +230,7 @@ titulo0.configure(font=contexto["letra"])
 contexto["imagen1"] = PhotoImage(file="img/desea.png")
 tkinter.Label(contexto["ventana"], image=contexto["imagen1"], bg='white').pack()
 
+# Cargar casinos
 contexto["url"] = 'https://becauv-production-393b.up.railway.app/api/casinos'
 response = requests.get(contexto["url"])
 casinos = response.json()
@@ -180,7 +247,14 @@ def habilitar_boton(event):
 
 combobox.bind("<<ComboboxSelected>>", habilitar_boton)
 
-boton_obtener_seleccion = tkinter.Button(contexto["ventana"], text="Seleccionar Casino", state='disabled', command=lector, bg="blue", fg="white")
+boton_obtener_seleccion = tkinter.Button(
+    contexto["ventana"],
+    text="Seleccionar Casino",
+    state='disabled',
+    command=iniciar_lector,
+    bg="blue",
+    fg="white"
+)
 boton_obtener_seleccion.pack(pady=5)
 
 contexto["ventana"].mainloop()
