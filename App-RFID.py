@@ -69,25 +69,6 @@ def borrar_bloque():
         log_action(f"Bloque {bloque} borrado")
         messagebox.showinfo("Éxito", f"Bloque {bloque} borrado correctamente.")
 
-# Interfaz principal
-root = tk.Tk()
-root.title("Herramientas RFID - MFRC522")
-root.geometry("300x250")
-
-tk.Label(root, text="Seleccione una acción:", font=("Arial", 14)).pack(pady=10)
-tk.Button(root, text="Grabar RUT", command=grabar_rut, bg="green", fg="white").pack(pady=5)
-tk.Button(root, text="Leer RUT", command=leer_rut, bg="blue", fg="white").pack(pady=5)
-tk.Button(root, text="Borrar bloque", command=borrar_bloque, bg="red", fg="white").pack(pady=5)
-
-tk.Button(root, text="Ver historial", command=ver_log, bg="gray", fg="white").pack(pady=5)
-tk.Button(root, text="Limpiar historial", command=limpiar_log, bg="orange", fg="black").pack(pady=5)
-tk.Button(root, text="Exportar historial a PDF", command=exportar_log_pdf, bg="purple", fg="white").pack(pady=5)
-tk.Button(root, text="Salir", command=root.destroy).pack(pady=20)
-
-
-root.mainloop()
-
-
 def log_action(text):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logline = f"[{timestamp}] {text}\n"
@@ -139,3 +120,22 @@ def exportar_log_pdf():
     nombre_archivo = f"rfid_log_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     pdf.output(nombre_archivo)
     messagebox.showinfo("Exportar", f"Historial exportado como '{nombre_archivo}'.")
+
+
+# Interfaz principal
+root = tk.Tk()
+root.title("Herramientas RFID - MFRC522")
+root.geometry("300x250")
+
+tk.Label(root, text="Seleccione una acción:", font=("Arial", 14)).pack(pady=10)
+tk.Button(root, text="Grabar RUT", command=grabar_rut, bg="green", fg="white").pack(pady=5)
+tk.Button(root, text="Leer RUT", command=leer_rut, bg="blue", fg="white").pack(pady=5)
+tk.Button(root, text="Borrar bloque", command=borrar_bloque, bg="red", fg="white").pack(pady=5)
+
+tk.Button(root, text="Ver historial", command=ver_log, bg="gray", fg="white").pack(pady=5)
+tk.Button(root, text="Limpiar historial", command=limpiar_log, bg="orange", fg="black").pack(pady=5)
+tk.Button(root, text="Exportar historial a PDF", command=exportar_log_pdf, bg="purple", fg="white").pack(pady=5)
+tk.Button(root, text="Salir", command=root.destroy).pack(pady=20)
+
+
+root.mainloop()
