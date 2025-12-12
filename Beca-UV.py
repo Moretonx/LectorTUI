@@ -96,12 +96,22 @@ def lectura():
         mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca")
 
 def lectura_desde_rut(rut_leido, ventanaLector):
-    # Esta función se ejecuta en el hilo de Tkinter (por after)
-    contexto["rut"] = rut_leido
+    # rut_leido puede venir como lista de ints/bytes
+    if isinstance(rut_leido, (list, tuple)):
+        # convierte ints a chars y quita basura
+        rut_str = ''.join(chr(x) for x in rut_leido if isinstance(x, int) and 32 <= x <= 126).strip()
+    elif isinstance(rut_leido, (bytes, bytearray)):
+        rut_str = rut_leido.decode('utf-8', errors='ignore').strip()
+    else:
+        rut_str = str(rut_leido).strip()
+
+    contexto["rut"] = rut_str
+
     try:
         ventanaLector.destroy()
     except:
         pass
+
     lectura()
 
 def canjear(ventanaNueva):
