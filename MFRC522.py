@@ -22,7 +22,7 @@
 #
 
 import RPi.GPIO as GPIO
-import spi
+import spidev
 import signal
 import time
 import binascii
@@ -130,7 +130,7 @@ class MFRC522:
     serNum = []
 
     def __init__(self, dev='/dev/spidev0.0', spd=1000000):
-        self.spi_fd = spi.openSPI(device=dev, speed=spd)
+        self.spi_fd = spidev.openSPI(device=dev, speed=spd)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.NRSTPD, GPIO.OUT)
         GPIO.output(self.NRSTPD, 1)
@@ -140,14 +140,14 @@ class MFRC522:
         self.Write_MFRC522(self.CommandReg, self.PCD_RESETPHASE)
 
     def Write_MFRC522(self, addr, val):
-        val = spi.transfer(self.spi_fd, ((addr << 1) & 0x7E, val))
+        val = spidev.transfer(self.spi_fd, ((addr << 1) & 0x7E, val))
 
     def Read_MFRC522(self, addr):
-        val = spi.transfer(self.spi_fd, (((addr << 1) & 0x7E) | 0x80, 0))
+        val = spidev.transfer(self.spi_fd, (((addr << 1) & 0x7E) | 0x80, 0))
         return val[1]
 
     def Close_MFRC522(self):
-        spi.closeSPI(self.spi_fd)
+        spidev.closeSPI(self.spi_fd)
         GPIO.cleanup()
 
     def SetBitMask(self, reg, mask):
