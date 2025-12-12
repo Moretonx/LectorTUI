@@ -170,7 +170,8 @@ def lector_loop(ventanaLector):
 
     except Exception as e:
         contexto["continue_reading"] = False
-        contexto["ventana"].after(0, lambda: mostrar_rechazo("Error lector", str(e)))
+        mensaje_error = str(e)
+        contexto["ventana"].after(0, lambda: mostrar_rechazo("Error lector", mensaje_error))
     finally:
         try:
             GPIO.cleanup()
