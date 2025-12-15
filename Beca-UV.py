@@ -28,7 +28,7 @@ contexto = {
 # =========================
 def mostrar_rechazo(titulo_texto, mensaje):
     ventanaR = Toplevel(contexto["ventana"])
-    ventanaR.state("zoomed")
+    ventanaR.attributes('-zoomed', True)
     ventanaR.configure(bg="white")
     ventanaR.title("Canje fallido")
 
@@ -46,7 +46,7 @@ def mostrar_rechazo(titulo_texto, mensaje):
 
 def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
     ventanaNueva = Toplevel(contexto["ventana"])
-    ventanaNueva.state("zoomed")
+    ventanaNueva.attributes('-zoomed', True)
     ventanaNueva.configure(bg="white")
     ventanaNueva.title("Lectura Exitosa")
 
@@ -72,7 +72,7 @@ def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
 
 def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
     ventanaN = Toplevel(contexto["ventana"])
-    ventanaN.state("zoomed")
+    ventanaN.attributes('-zoomed', True)
     ventanaN.configure(bg="white")
     ventanaN.title("Canje Exitoso")
 
@@ -242,7 +242,7 @@ def iniciar_lector():
     contexto["continue_reading"] = True
 
     ventanaLector = Toplevel(contexto["ventana"])
-    ventanaLector.state("zoomed")
+    ventanaLector.attributes('-zoomed', True)
     ventanaLector.configure(bg="white")
     ventanaLector.title("Beca de Almuerzo UV")
 
@@ -279,7 +279,7 @@ def volver_a_lector():
 # UI PRINCIPAL
 # =========================
 contexto["ventana"] = tkinter.Tk()
-contexto["ventana"].state("zoomed")
+contexto["ventana"].attributes('-zoomed', True)
 contexto["ventana"].configure(bg="white")
 contexto["ventana"].title("Beca de Almuerzo UV")
 
