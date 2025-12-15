@@ -298,7 +298,7 @@ titulo0 = tkinter.Label(
 )
 titulo0.pack()
 
-contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
+#contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
 
 # Cargar casinos
