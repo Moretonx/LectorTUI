@@ -38,10 +38,10 @@ def mostrar_rechazo(titulo_texto, mensaje):
 
     rechazar = PhotoImage(file="img/rechazar.png")
     tkinter.Label(ventanaR, image=rechazar, bg="white").pack()
-    ventanaR.rechazar = rechazar  # evitar GC
+    ventanaR.rechazar = rechazar
 
     tkinter.Label(ventanaR, text=mensaje, bg="white", font=contexto["font_normal"]).pack()
-    tkinter.Button(ventanaR, text="Salir", command=ventanaR.destroy, bg="red", fg="white").pack()
+    tkinter.Button(ventanaR, text="Salir", command=lambda: (ventanaR.destroy(), volver_a_lector()), bg="red", fg="white").pack()
 
 
 def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
@@ -90,7 +90,7 @@ def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
         font=contexto["font_normal"],
     ).pack()
 
-    tkinter.Button(ventanaN, text="Salir", command=ventanaN.destroy, bg="red", fg="white").pack()
+    tkinter.Button(ventanaN, text="Salir", command=lambda: (ventanaN.destroy(), volver_a_lector()), bg="red", fg="white").pack()
 
     try:
         ventanaPadre.destroy()
@@ -252,7 +252,7 @@ def iniciar_lector():
 
     lectorImage = PhotoImage(file="img/lector.png")
     tkinter.Label(ventanaLector, image=lectorImage, bg="white").pack()
-    ventanaLector.lectorImage = lectorImage  # evitar GC
+    ventanaLector.lectorImage = lectorImage
 
     def cerrar():
         contexto["continue_reading"] = False
@@ -265,6 +265,14 @@ def iniciar_lector():
     ventanaLector.protocol("WM_DELETE_WINDOW", cerrar)
 
     threading.Thread(target=lector_loop, args=(ventanaLector,), daemon=True).start()
+
+def volver_a_lector():
+    # Reinicia estado y vuelve a abrir el lector con el mismo casino ya seleccionado
+    contexto["rut"] = None
+    contexto["continue_reading"] = True
+
+    # abrir lector en el hilo principal (seguro para Tk)
+    contexto["ventana"].after(0, iniciar_lector)
 
 
 # =========================
