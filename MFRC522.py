@@ -301,9 +301,9 @@ class MFRC522:
             return raw.decode("latin-1", errors="ignore").replace("\x00", "").strip()
 
     def MFRC522_Read(self, blockAddr):
-    recvData = [self.PICC_READ, blockAddr]
-    pOut = self.CalulateCRC(recvData)
-    recvData += [pOut[0], pOut[1]]
+        recvData = [self.PICC_READ, blockAddr]
+        pOut = self.CalulateCRC(recvData)
+        recvData += [pOut[0], pOut[1]]
 
     (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
 
