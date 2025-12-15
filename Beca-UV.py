@@ -296,7 +296,7 @@ titulo0 = tkinter.Label(
     bg="white",
     font=contexto["font_title"],
 )
-titulo0.pack()
+titulo0.pack(pady=5)
 
 #contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
@@ -312,13 +312,14 @@ except Exception as e:
 opciones = [f"{obj.get('id')} - {obj.get('nombre')}" for obj in casinos if "id" in obj and "nombre" in obj]
 
 style = ttk.Style(contexto["ventana"])
-style.theme_use("default")
+style.theme_use("clam")
 style.configure("Big.TCombobox", font=("Arial", 18))
 
 contexto["ventana"].option_add("*TCombobox*Listbox.font", ("Arial", 18))
 
 combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48,
-style="Grande.TCombobox")
+style="Big.TCombobox",
+state="readonly")
 combobox.set("Seleccione una opción")
 combobox.pack(pady=15)
 
