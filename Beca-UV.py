@@ -28,7 +28,7 @@ contexto = {
 # =========================
 def mostrar_rechazo(titulo_texto, mensaje):
     ventanaR = Toplevel(contexto["ventana"])
-    ventanaR.geometry("800x480")
+    ventanaR.geometry("1024x600")
     ventanaR.configure(bg="white")
     ventanaR.title("Canje fallido")
 
@@ -46,7 +46,7 @@ def mostrar_rechazo(titulo_texto, mensaje):
 
 def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
     ventanaNueva = Toplevel(contexto["ventana"])
-    ventanaNueva.geometry("800x480")
+    ventanaNueva.geometry("1024x600")
     ventanaNueva.configure(bg="white")
     ventanaNueva.title("Lectura Exitosa")
 
@@ -72,7 +72,7 @@ def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
 
 def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
     ventanaN = Toplevel(contexto["ventana"])
-    ventanaN.geometry("800x480")
+    ventanaN.geometry("1024x600")
     ventanaN.configure(bg="white")
     ventanaN.title("Canje Exitoso")
 
@@ -246,7 +246,7 @@ def iniciar_lector():
     contexto["continue_reading"] = True
 
     ventanaLector = Toplevel(contexto["ventana"])
-    ventanaLector.geometry("800x480")
+    ventanaLector.geometry("1024x600")
     ventanaLector.configure(bg="white")
     ventanaLector.title("Beca de Almuerzo UV")
 
