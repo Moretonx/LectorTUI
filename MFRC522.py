@@ -193,14 +193,12 @@ class MFRC522:
         hexs = binascii.hexlify(raw).decode("ascii")
         text = raw.decode("latin-1", errors="ignore").replace("\x00", "").strip()
 
-        # === Formato legado (como tú lo usabas) ===
         if blockAddr == 68:
-            return hexs[1:9] + "-" + hexs[9:10]
+            # aa es bytes con hex, ejemplo: b'31323334...'
+            aa = binascii.hexlify(bytearray(backData))  # bytes hex
+            rut = aa[1:9].decode("ascii") + "-" + aa[9:10].decode("ascii")
+            return rut
 
-        if blockAddr in (72, 73, 74, 80):
-            return text
-
-        return text
 
     # =========================
     # CRC
