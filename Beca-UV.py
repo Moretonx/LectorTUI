@@ -163,7 +163,7 @@ def lector_loop(ventanaLector):
                 uid = list(uid)
 
             if status == MIFAREReader.MI_OK:
-                MIFAREReader.MFRC522_SelectTag(uid)
+                #MIFAREReader.MFRC522_SelectTag(uid)
 
                 numero = 68
                 st = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, numero, key, uid)
