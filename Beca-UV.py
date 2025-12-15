@@ -237,6 +237,10 @@ def finalizar_lector_y_leer(ventanaLector):
         pass
     lectura()
 
+def abrir_combo(event):
+    combobox.focus_set()
+    combobox.event_generate("<Down>")
+
 
 def iniciar_lector():
     contexto["continue_reading"] = True
@@ -321,6 +325,7 @@ combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48,
 style="Big.TCombobox",
 state="readonly")
 combobox.set("Seleccione una opción")
+combobox.bind("<Button-1>", abrir_combo)
 combobox.pack(pady=15)
 
 boton_obtener_seleccion = tkinter.Button(
