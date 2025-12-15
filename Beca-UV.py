@@ -300,7 +300,7 @@ titulo0 = tkinter.Label(
     bg="white",
     font=contexto["font_title"],
 )
-titulo0.pack(pady=5)
+titulo0.pack(pady=10)
 
 #contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
@@ -339,7 +339,7 @@ boton_obtener_seleccion = tkinter.Button(
     width=20,
     height=2
 )
-boton_obtener_seleccion.pack(pady=5)
+boton_obtener_seleccion.pack(pady=15)
 
 def habilitar_boton(event=None):
     seleccion = combobox.get()
