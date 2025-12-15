@@ -279,11 +279,11 @@ def volver_a_lector():
 # UI PRINCIPAL
 # =========================
 contexto["ventana"] = tkinter.Tk()
-contexto["ventana"].geometry("1000x900")
+contexto["ventana"].attributes("-fullscreen", True)
 contexto["ventana"].configure(bg="white")
 contexto["ventana"].title("Beca de Almuerzo UV")
 
-contexto["imagen_uv"] = PhotoImage(file="img/uv.png")
+contexto["imagen_uv"] = PhotoImage(file="img/uv.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_uv"], bg="white").pack()
 
 contexto["font_title"] = TkFont.Font(family="Arial", size=20, weight="bold")
@@ -298,7 +298,7 @@ titulo0 = tkinter.Label(
 )
 titulo0.pack()
 
-contexto["imagen_desea"] = PhotoImage(file="img/desea.png")
+contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
 
 # Cargar casinos
@@ -311,9 +311,10 @@ except Exception as e:
 
 opciones = [f"{obj.get('id')} - {obj.get('nombre')}" for obj in casinos if "id" in obj and "nombre" in obj]
 
-combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48)
+combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48,
+style="Grande.TCombobox")
 combobox.set("Seleccione una opción")
-combobox.pack(pady=10)
+combobox.pack(pady=15)
 
 boton_obtener_seleccion = tkinter.Button(
     contexto["ventana"],
@@ -322,6 +323,8 @@ boton_obtener_seleccion = tkinter.Button(
     command=iniciar_lector,
     bg="blue",
     fg="white",
+    width=20,
+    height=2
 )
 boton_obtener_seleccion.pack(pady=5)
 
