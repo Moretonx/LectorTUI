@@ -1,4 +1,25 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+#
+#    This file is part of MFRC522-Python
+#    MFRC522-Python is a simple Python implementation for
+#    the MFRC522 NFC Card Reader for the Raspberry Pi.
+#
+#    MFRC522-Python is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Lesser General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    MFRC522-Python is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Lesser General Public License for more details.
+#
+#    You should have received a copy of the GNU Lesser General Public License
+#    along with MFRC522-Python.  If not, see <http://www.gnu.org/licenses/>.
+
 # mfrc522.py  (BCM + Python3)
+
 import RPi.GPIO as GPIO
 import spidev
 import time
@@ -280,29 +301,25 @@ class MFRC522:
             return raw.decode("latin-1", errors="ignore").replace("\x00", "").strip()
 
     def MFRC522_Read(self, blockAddr):
-        recvData = [self.PICC_READ, blockAddr]
-        crc = self.CalulateCRC(recvData)
-        recvData += crc
+    recvData = [self.PICC_READ, blockAddr]
+    pOut = self.CalulateCRC(recvData)
+    recvData += [pOut[0], pOut[1]]
 
-        (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
-        if status != self.MI_OK or len(backData) != 16:
-            return None
+    (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
 
-        raw = bytes(backData)
+    if status != self.MI_OK or len(backData) != 16:
+        print("Error while reading!")
+        return None
 
-        # hex string tipo "303132..."
-        hexs = binascii.hexlify(raw).decode("ascii")
+    raw = bytes(backData)                 # 16 bytes
+    aa = binascii.hexlify(raw).decode()   # str con 32 hex chars, ej: "017760740100..."
 
-        if blockAddr == 68:
-            # tu lógica antigua: aa[1:9]+"-"+aa[9:10]
-            # lo replico pero en str
-            rut = f"{hexs[1:9]}-{hexs[9:10]}"
-            return rut
+    if blockAddr == 68:
+        cuerpo = aa[1:9]      # "17760740"
+        dv = aa[9:10]         # "1"
+        return f"{int(cuerpo)}-{dv}"  # int() quita ceros a la izquierda si los hubiese
 
-        if blockAddr in (72, 73, 74, 80):
-            return self._bytes_to_text(raw)
-
-        return raw
+    return raw  # por si quieres ver bytes en otros bloques
 
     def MFRC522_Init(self):
         self.MFRC522_Reset()
