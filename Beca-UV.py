@@ -311,7 +311,10 @@ except Exception as e:
 
 opciones = [f"{obj.get('id')} - {obj.get('nombre')}" for obj in casinos if "id" in obj and "nombre" in obj]
 
-combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48, height=2,
+style = ttk.Style()
+style.configure("Grande.TCombobox", font=("Arial", 18))
+
+combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48,
 style="Grande.TCombobox")
 combobox.set("Seleccione una opción")
 combobox.pack(pady=15)
@@ -323,6 +326,7 @@ boton_obtener_seleccion = tkinter.Button(
     command=iniciar_lector,
     bg="blue",
     fg="white",
+    font=("Arial", 18, "bold"),
     width=20,
     height=2
 )
