@@ -305,21 +305,21 @@ class MFRC522:
         pOut = self.CalulateCRC(recvData)
         recvData += [pOut[0], pOut[1]]
 
-    (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
+        (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
 
-    if status != self.MI_OK or len(backData) != 16:
-        print("Error while reading!")
-        return None
+        if status != self.MI_OK or len(backData) != 16:
+            print("Error while reading!")
+            return None
 
-    raw = bytes(backData)                 # 16 bytes
-    aa = binascii.hexlify(raw).decode()   # str con 32 hex chars, ej: "017760740100..."
+        raw = bytes(backData)                 # 16 bytes
+        aa = binascii.hexlify(raw).decode()   # str con 32 hex chars, ej: "017760740100..."
 
-    if blockAddr == 68:
-        cuerpo = aa[1:9]      # "17760740"
-        dv = aa[9:10]         # "1"
-        return f"{int(cuerpo)}-{dv}"  # int() quita ceros a la izquierda si los hubiese
+        if blockAddr == 68:
+            cuerpo = aa[1:9]      # "17760740"
+            dv = aa[9:10]         # "1"
+            return f"{int(cuerpo)}-{dv}"  # int() quita ceros a la izquierda si los hubiese
 
-    return raw  # por si quieres ver bytes en otros bloques
+        return raw  # por si quieres ver bytes en otros bloques
 
     def MFRC522_Init(self):
         self.MFRC522_Reset()
