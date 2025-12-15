@@ -326,7 +326,7 @@ boton_obtener_seleccion = tkinter.Button(
     command=iniciar_lector,
     bg="blue",
     fg="white",
-    font=("Arial", 18, "bold"),
+    font=("Arial", 14, "bold"),
     width=20,
     height=2
 )
