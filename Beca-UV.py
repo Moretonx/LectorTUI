@@ -298,7 +298,7 @@ titulo0 = tkinter.Label(
 )
 titulo0.pack()
 
-contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(1, 1)
+contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
 
 # Cargar casinos
@@ -330,7 +330,7 @@ boton_obtener_seleccion.pack(pady=5)
 
 def habilitar_boton(event=None):
     seleccion = combobox.get()
-    boton_obtener_seleccion["state"] = "disabled" if seleccion != "Seleccione una opción" else "disabled"
+    boton_obtener_seleccion["state"] = "normal" if seleccion != "Seleccione una opción" else "disabled"
 
 combobox.bind("<<ComboboxSelected>>", habilitar_boton)
 
