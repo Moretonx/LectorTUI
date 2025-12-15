@@ -28,7 +28,7 @@ contexto = {
 # =========================
 def mostrar_rechazo(titulo_texto, mensaje):
     ventanaR = Toplevel(contexto["ventana"])
-    ventanaR.geometry("1000x900")
+    ventanaR.state("zoomed")
     ventanaR.configure(bg="white")
     ventanaR.title("Canje fallido")
 
@@ -46,7 +46,7 @@ def mostrar_rechazo(titulo_texto, mensaje):
 
 def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
     ventanaNueva = Toplevel(contexto["ventana"])
-    ventanaNueva.geometry("1000x900")
+    ventanaNueva.state("zoomed")
     ventanaNueva.configure(bg="white")
     ventanaNueva.title("Lectura Exitosa")
 
@@ -72,7 +72,7 @@ def mostrar_aprobacion(nombre, cantidad, on_canjear, on_salir):
 
 def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
     ventanaN = Toplevel(contexto["ventana"])
-    ventanaN.geometry("1000x900")
+    ventanaN.state("zoomed")
     ventanaN.configure(bg="white")
     ventanaN.title("Canje Exitoso")
 
@@ -81,7 +81,7 @@ def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
 
     aprobar = PhotoImage(file="img/aprobar.png")
     tkinter.Label(ventanaN, image=aprobar, bg="white").pack()
-    ventanaN.aprobar = aprobar  # evitar GC
+    ventanaN.aprobar = aprobar
 
     tkinter.Label(
         ventanaN,
@@ -90,7 +90,8 @@ def mostrar_canje_exitoso(cantidad_restante, ventanaPadre):
         font=contexto["font_normal"],
     ).pack()
 
-    tkinter.Button(ventanaN, text="Salir", command=lambda: (ventanaN.destroy(), volver_a_lector()), bg="red", fg="white").pack()
+    tkinter.Button(ventanaN, text="Salir", command=lambda: (ventanaN.destroy(), volver_a_lector()), width=20,
+    height=2, bg="red", fg="white").pack()
 
     try:
         ventanaPadre.destroy()
@@ -166,7 +167,6 @@ def canjear(ventanaNueva):
 # LECTOR RFID (HILO)
 # =========================
 def lector_loop(ventanaLector):
-    # clave que estás probando (ojo: si la tarjeta cambió, esto puede fallar)
     key = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
 
     contexto["continue_reading"] = True
@@ -242,7 +242,7 @@ def iniciar_lector():
     contexto["continue_reading"] = True
 
     ventanaLector = Toplevel(contexto["ventana"])
-    ventanaLector.geometry("1000x900")
+    ventanaLector.state("zoomed")
     ventanaLector.configure(bg="white")
     ventanaLector.title("Beca de Almuerzo UV")
 
@@ -279,11 +279,11 @@ def volver_a_lector():
 # UI PRINCIPAL
 # =========================
 contexto["ventana"] = tkinter.Tk()
-contexto["ventana"].attributes("-fullscreen", True)
+contexto["ventana"].state("zoomed")
 contexto["ventana"].configure(bg="white")
 contexto["ventana"].title("Beca de Almuerzo UV")
 
-contexto["imagen_uv"] = PhotoImage(file="img/uv.png").subsample(2, 2)
+contexto["imagen_uv"] = PhotoImage(file="img/uv.png").subsample(1, 1)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_uv"], bg="white").pack()
 
 contexto["font_title"] = TkFont.Font(family="Arial", size=20, weight="bold")
@@ -298,7 +298,7 @@ titulo0 = tkinter.Label(
 )
 titulo0.pack()
 
-contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(2, 2)
+contexto["imagen_desea"] = PhotoImage(file="img/desea.png").subsample(1, 1)
 tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").pack()
 
 # Cargar casinos
@@ -311,7 +311,7 @@ except Exception as e:
 
 opciones = [f"{obj.get('id')} - {obj.get('nombre')}" for obj in casinos if "id" in obj and "nombre" in obj]
 
-combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48,
+combobox = ttk.Combobox(contexto["ventana"], values=opciones, width=48, height=2,
 style="Grande.TCombobox")
 combobox.set("Seleccione una opción")
 combobox.pack(pady=15)
@@ -330,7 +330,7 @@ boton_obtener_seleccion.pack(pady=5)
 
 def habilitar_boton(event=None):
     seleccion = combobox.get()
-    boton_obtener_seleccion["state"] = "normal" if seleccion != "Seleccione una opción" else "disabled"
+    boton_obtener_seleccion["state"] = "disabled" if seleccion != "Seleccione una opción" else "disabled"
 
 combobox.bind("<<ComboboxSelected>>", habilitar_boton)
 
