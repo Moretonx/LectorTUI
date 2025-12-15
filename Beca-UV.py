@@ -145,37 +145,48 @@ def canjear(ventanaNueva):
 def lector_loop(ventanaLector):
     key = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
 
+    # Asegura lectura en esta sesión
+    contexto["continue_reading"] = True
+
     GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
 
     MIFAREReader = MFRC522.MFRC522()
 
     try:
-        GPIO.setmode(GPIO.BOARD)
-
         while contexto["continue_reading"]:
             (status, _) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
             (status, uid) = MIFAREReader.MFRC522_Anticoll()
+
+            # algunas libs/devuelven bytes
             if isinstance(uid, (bytes, bytearray)):
                 uid = list(uid)
 
             if status == MIFAREReader.MI_OK:
                 MIFAREReader.MFRC522_SelectTag(uid)
-                numero = 68
-                status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, numero, key, uid)
 
-                if status == MIFAREReader.MI_OK:
+                numero = 68
+                st = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, numero, key, uid)
+
+                if st == MIFAREReader.MI_OK:
                     rut_leido = MIFAREReader.MFRC522_Read(numero)
                     MIFAREReader.MFRC522_StopCrypto1()
 
-                    # Evitar doble lectura
+                    # corta loop inmediatamente para evitar doble lectura
                     contexto["continue_reading"] = False
 
-                    # Volver al hilo principal para abrir ventanas / llamar lectura()
-                    contexto["ventana"].after(0, lambda: lectura_desde_rut(rut_leido, ventanaLector))
+                    # UI siempre en hilo principal
+                    contexto["ventana"].after(
+                        0, lambda: lectura_desde_rut(rut_leido, ventanaLector)
+                    )
                     return
+
                 else:
+                    MIFAREReader.MFRC522_StopCrypto1()
                     contexto["continue_reading"] = False
-                    contexto["ventana"].after(0, lambda: mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca"))
+                    contexto["ventana"].after(
+                        0, lambda: mostrar_rechazo("¡Beca rechazada!", "Usted no posee beca")
+                    )
                     return
 
             time.sleep(0.2)
@@ -184,7 +195,14 @@ def lector_loop(ventanaLector):
         contexto["continue_reading"] = False
         mensaje_error = str(e)
         contexto["ventana"].after(0, lambda: mostrar_rechazo("Error lector", mensaje_error))
+
     finally:
+        # Cierra SPI si tu clase lo expone (en tu mfrc522.py existe Close_MFRC522)
+        try:
+            MIFAREReader.Close_MFRC522()
+        except:
+            pass
+
         try:
             GPIO.cleanup()
         except:
