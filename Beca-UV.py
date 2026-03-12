@@ -115,7 +115,7 @@ def lectura():
         mostrar_rechazo("Error lector", "No se pudo obtener el RUT desde la tarjeta.")
         return
 
-    contexto["url"] = f"https://becauv-production-393b.up.railway.app/api/canjes/{rut}/{idCasino}"
+    contexto["url"] = f"https://backend-production-dcf9.up.railway.app/api/canjes/{rut}/{idCasino}"
 
     try:
         response = requests.get(contexto["url"], timeout=8)
@@ -307,7 +307,7 @@ tkinter.Label(contexto["ventana"], image=contexto["imagen_desea"], bg="white").p
 
 # Cargar casinos
 try:
-    response = requests.get("https://becauv-production-393b.up.railway.app/api/casinos", timeout=8)
+    response = requests.get("https://backend-production-dcf9.up.railway.app/api/casinos", timeout=8)
     casinos = response.json()
 except Exception as e:
     casinos = []
